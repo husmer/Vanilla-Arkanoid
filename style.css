@@ -1,0 +1,43 @@
+.grid {
+    width: 670px;
+    height: 300px;
+    border: 1px solid black;
+    position: absolute;
+}
+
+.block, .bat {
+    width: 100px;
+    height: 20px;
+    background-color: #0303AA;
+    position: absolute;
+    left: 10px;
+    bottom: 10px;
+}
+
+.bat {
+    background-color: #AA0303;
+}
+
+.ball {
+    width: 10px;
+    height: 10px;
+    background-color: #03AA03;
+    position: absolute;
+    border-radius: 5px;
+}
+
+.splash {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 50%;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+}
+
+.countdown {
+    font-size: 48px;
+    color: white;
+}
