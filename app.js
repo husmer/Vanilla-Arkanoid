@@ -115,7 +115,7 @@ function createRows() {
     }
 }
 
-function moveBall() {
+function moveBall(timestamp) {
     if (gameIsOver) {
         return;
     }
@@ -125,19 +125,25 @@ function moveBall() {
         gameover.innerHTML = " WINNER WINNER CHICKEN DINNER!";
         stop();
     }
-    ball.setX(ball.bottomLeft.x + xDirection);
-    ball.setY(ball.bottomLeft.y + yDirection);
-    const ballElement = document.querySelector('.ball');
-    ballElement.style.left = ball.bottomLeft.x + 'px';
-    ballElement.style.bottom = ball.bottomLeft.y + 'px';
+
+    if (!startTime) {
+        startTime = timestamp;
+    }
+
+    const elapsedMilliseconds = timestamp - startTime;
+    if (elapsedMilliseconds >= ballSpeed) {
+        ball.setX(ball.bottomLeft.x + xDirection);
+        ball.setY(ball.bottomLeft.y + yDirection);
+        const ballElement = document.querySelector('.ball');
+        ballElement.style.left = ball.bottomLeft.x + 'px';
+        ballElement.style.bottom = ball.bottomLeft.y + 'px';
+    }
+
+    requestAnimationFrame(moveBall);
 }
 
-function gameLoop() {
-    moveBall();
-    requestAnimationFrame(gameLoop);
-}
-// starts the game
-requestAnimationFrame(gameLoop);
+let startTime;
+let countdownInterval;
 
 function checkCollision() {
     // Bat hit detection
@@ -199,3 +205,15 @@ function stop() {
     document.removeEventListener('keydown', moveBat);
 }
 
+countdownInterval = setInterval(() => {
+    countdown--;
+    if (countdown === 0) {
+        countdownElement.textContent = 'GO!';
+    } else if (countdown < 0) {
+        clearInterval(countdownInterval);
+        splashScreen.style.display = 'none'; // Hide the splash screen
+        requestAnimationFrame(moveBall);
+    } else {
+        countdownElement.textContent = countdown;
+    }
+}, 1000);
