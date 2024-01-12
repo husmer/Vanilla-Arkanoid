@@ -29,6 +29,16 @@ const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
 let score = 0;
 
+const splashScreen = document.getElementById('splashScreen');
+const countdownElement = document.getElementById('countdown');
+
+// Show the splash screen initially
+splashScreen.style.display = 'flex';
+
+// Countdown and start the game
+let countdown = 3;
+countdownElement.textContent = countdown;
+
 function moveBat(event) {
     const key = event.key;
     switch (key) {
@@ -94,7 +104,12 @@ function displayBlock(b, style) {
 function createRows() {
     for (let j = 1; j < 4; j++) {
         for (let i = 0; i < 6; i++) {
-            const block = new Block(10 + i * (blockWidth + 10), 300 - j * (20 + 10), blockWidth, blockHeight);
+            const block = new Block(
+                10 + i * (blockWidth + 10), 
+                300 - j * (20 + 10), 
+                blockWidth, 
+                blockHeight
+            );
             blocks.push(block);
         }
     }
