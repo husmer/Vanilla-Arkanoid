@@ -1,3 +1,4 @@
+// +++ Setting game constants +++
 const boardWidth = 670;
 const boardHeight = 300;
 
@@ -13,6 +14,12 @@ const ballSpeed = 5;
 let xDirection = -2;
 let yDirection = 2;
 
+const nmbOfColumns = 6;
+const nmbOfRows = 3;
+
+// Setting the max score of the game
+const maxScore = 10 * nmbOfColumns * nmbOfRows;
+console.log(maxScore)
 let gameIsOver = false;
 
 const grid = document.querySelector('.grid');
@@ -29,27 +36,8 @@ const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
 let score = 0;
 
-function moveBat(event) {
-    const key = event.key;
-    switch (key) {
-        case 'ArrowLeft':
-            if (bat.bottomLeft.x >= 10) {
-                bat.setX(bat.bottomLeft.x - 10);
-                const bElement = document.querySelector('.bat');
-                bElement.style.left = bat.bottomLeft.x + 'px';
-            }
-            break;
-        case 'ArrowRight':
-            if (bat.bottomLeft.x <= 560) {
-                bat.setX(bat.bottomLeft.x + 10);
-                const bElement = document.querySelector('.bat');
-                bElement.style.left = bat.bottomLeft.x + 'px';
-            }
-            break;
-    }
-}
 
-// define blocks
+// Define and build blocks
 function Block(left, bottom, width, height) {
     this.bottomLeft = { x: left, y: bottom };
     this.bottomRight = { x: left + width, y: bottom };
@@ -76,8 +64,10 @@ Block.prototype.setY = function(y) {
 
 const blocks = [];
 
-// Setting the max score of the game
-const maxScore = 10 * createRows();
+// --- End of setting game constants ---
+
+// +++ Building game blocks +++
+createRows();
 displayBlocks();
 
 function displayBlocks() {
@@ -94,15 +84,37 @@ function displayBlock(b, style) {
 
 function createRows() {
     let blockCounter = 0;
-    for (let j = 1; j < 4; j++) {
-        for (let i = 0; i < 6; i++) {
-            const block = new Block(10 + i * (blockWidth + 10), 300 - j * (20 + 10), blockWidth, blockHeight);
+    for (let j = 0; j < nmbOfRows; j++) {
+        for (let i = 0; i < nmbOfColumns; i++) {
+            const block = new Block(10 + i * (blockWidth + 10), 300 - (j+1) * (20 + 10), blockWidth, blockHeight);
             blocks.push(block);
             blockCounter += 1
         }
     };
 
     return blockCounter;
+}
+// --- End of building game blocks ---
+
+// +++ Start of game loop +++
+function moveBat(event) {
+    const key = event.key;
+    switch (key) {
+        case 'ArrowLeft':
+            if (bat.bottomLeft.x >= 10) {
+                bat.setX(bat.bottomLeft.x - 10);
+                const bElement = document.querySelector('.bat');
+                bElement.style.left = bat.bottomLeft.x + 'px';
+            }
+            break;
+        case 'ArrowRight':
+            if (bat.bottomLeft.x <= 560) {
+                bat.setX(bat.bottomLeft.x + 10);
+                const bElement = document.querySelector('.bat');
+                bElement.style.left = bat.bottomLeft.x + 'px';
+            }
+            break;
+    }
 }
 
 function moveBall() {
@@ -222,5 +234,6 @@ function gameLoop() {
     moveBall();
     requestAnimationFrame(gameLoop);
 }
-// starts the game
+
+// +++ Starts the game +++
 requestAnimationFrame(gameLoop);
