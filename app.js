@@ -8,7 +8,7 @@ const ballWidth = 10;
 const ballHeight = 10;
 const ballSpeed = 5;
 
-const maxScore = 180;
+const maxScore = 60;
 
 let xDirection = -2;
 let yDirection = 2;
@@ -28,16 +28,6 @@ displayBlock(ball, 'ball');
 const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
 let score = 0;
-
-const splashScreen = document.getElementById('splashScreen');
-const countdownElement = document.getElementById('countdown');
-
-// Show the splash screen initially
-splashScreen.style.display = 'flex';
-
-// Countdown and start the game
-let countdown = 3;
-countdownElement.textContent = countdown;
 
 function moveBat(event) {
     const key = event.key;
@@ -102,20 +92,15 @@ function displayBlock(b, style) {
 }
 
 function createRows() {
-    for (let j = 1; j < 4; j++) {
+    for (let j = 1; j < 2; j++) {
         for (let i = 0; i < 6; i++) {
-            const block = new Block(
-                10 + i * (blockWidth + 10), 
-                300 - j * (20 + 10), 
-                blockWidth, 
-                blockHeight
-            );
+            const block = new Block(10 + i * (blockWidth + 10), 300 - j * (20 + 10), blockWidth, blockHeight);
             blocks.push(block);
         }
     }
 }
 
-function moveBall(timestamp) {
+function moveBall() {
     if (gameIsOver) {
         return;
     }
@@ -125,25 +110,13 @@ function moveBall(timestamp) {
         gameover.innerHTML = " WINNER WINNER CHICKEN DINNER!";
         stop();
     }
-
-    if (!startTime) {
-        startTime = timestamp;
-    }
-
-    const elapsedMilliseconds = timestamp - startTime;
-    if (elapsedMilliseconds >= ballSpeed) {
-        ball.setX(ball.bottomLeft.x + xDirection);
-        ball.setY(ball.bottomLeft.y + yDirection);
-        const ballElement = document.querySelector('.ball');
-        ballElement.style.left = ball.bottomLeft.x + 'px';
-        ballElement.style.bottom = ball.bottomLeft.y + 'px';
-    }
-
-    requestAnimationFrame(moveBall);
+    ball.setX(ball.bottomLeft.x + xDirection);
+    ball.setY(ball.bottomLeft.y + yDirection);
+    const ballElement = document.querySelector('.ball');
+    ballElement.style.left = ball.bottomLeft.x + 'px';
+    ballElement.style.bottom = ball.bottomLeft.y + 'px';
 }
 
-let startTime;
-let countdownInterval;
 
 function checkCollision() {
     // Bat hit detection
@@ -155,12 +128,20 @@ function checkCollision() {
             xDirection = 2;
         }
     }
-    // Wall and Block hit detection
+    // Wall hit detection
     if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
         xDirection = -1 * xDirection;
-    } else if (ball.topRight.y === boardHeight) {    // Top wall
+    }
+    
+    if (ball.topRight.y === boardHeight) {    // Top wall
         yDirection = -1 * yDirection;
+        if (xDirection === 2) {
+            xDirection = 1;
+        } else {
+            xDirection = -1;
+        }
     } else if (ball.bottomRight.y === 0) {    // Bottom wall
+        gameover.innerHTML = " Game over bozo...";
         stop();
     } else {  // Block hit detection
         const blkIndex = blocks.findIndex(checkBounds);
@@ -200,20 +181,14 @@ function hitSide(b) {
 }
 
 function stop() {
-    gameIsOver = true;
-    gameover.innerHTML = " Game over bozo...";
     document.removeEventListener('keydown', moveBat);
+    gameIsOver = true;
 }
 
-countdownInterval = setInterval(() => {
-    countdown--;
-    if (countdown === 0) {
-        countdownElement.textContent = 'GO!';
-    } else if (countdown < 0) {
-        clearInterval(countdownInterval);
-        splashScreen.style.display = 'none'; // Hide the splash screen
-        requestAnimationFrame(moveBall);
-    } else {
-        countdownElement.textContent = countdown;
-    }
-}, 1000);
+function gameLoop() {
+    console.log("Ball topRight Y coord: " + ball.topRight.y)
+    moveBall();
+    requestAnimationFrame(gameLoop);
+}
+// starts the game
+requestAnimationFrame(gameLoop);

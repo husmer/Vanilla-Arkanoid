@@ -26,7 +26,11 @@
     border-radius: 5px;
 }
 
-.splash {
+#gameover {
+    position: absolute;
+    left: 20%;
+}
+/* .splash {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,4 +44,4 @@
 .countdown {
     font-size: 48px;
     color: white;
-}
+} */
