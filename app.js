@@ -8,7 +8,7 @@ const ballWidth = 10;
 const ballHeight = 10;
 const ballSpeed = 5;
 
-const maxScore = 60;
+
 
 let xDirection = -2;
 let yDirection = 2;
@@ -76,7 +76,8 @@ Block.prototype.setY = function(y) {
 
 const blocks = [];
 
-createRows();
+// Setting the max score of the game
+const maxScore = 10 * createRows();
 displayBlocks();
 
 function displayBlocks() {
@@ -92,12 +93,16 @@ function displayBlock(b, style) {
 }
 
 function createRows() {
-    for (let j = 1; j < 2; j++) {
+    let blockCounter = 0;
+    for (let j = 1; j < 4; j++) {
         for (let i = 0; i < 6; i++) {
             const block = new Block(10 + i * (blockWidth + 10), 300 - j * (20 + 10), blockWidth, blockHeight);
             blocks.push(block);
+            blockCounter += 1
         }
-    }
+    };
+
+    return blockCounter;
 }
 
 function moveBall() {
@@ -132,31 +137,48 @@ function checkCollision() {
     if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
         xDirection = -1 * xDirection;
     }
-    
-    if (ball.topRight.y === boardHeight) {    // Top wall
+    // Top wall hit detection
+    if (ball.topRight.y === boardHeight) {    
         yDirection = -1 * yDirection;
         if (xDirection === 2) {
             xDirection = 1;
         } else {
             xDirection = -1;
         }
-    } else if (ball.bottomRight.y === 0) {    // Bottom wall
+    } 
+    // Bottom wall hit detection
+    if (ball.bottomRight.y === 0) {    
         gameover.innerHTML = " Game over bozo...";
         stop();
-    } else {  // Block hit detection
-        const blkIndex = blocks.findIndex(checkBounds);
-        if (blkIndex >= 0) {
-            if (hitSide(blocks[blkIndex])) {
-                xDirection = -1 * xDirection; // Blocks side wall hit reverses x direction
-            } else {
-                yDirection = -1 * yDirection; // Direct hit reverses y direction
-            }
-            const allBlocks = document.querySelectorAll('.block');
-            grid.removeChild(allBlocks[blkIndex]);
-            blocks.splice(blkIndex, 1);
-            score = score + 10;
-        }
     }
+     // Block hit detection
+    const blkIndex = blocks.findIndex(checkBounds);
+    // Check if no blocks are touched
+    if (blkIndex < 0) {
+        return
+    }
+
+    if (hitSide(blocks[blkIndex])) {
+        xDirection = -1 * xDirection; // Blocks side wall hit reverses x direction
+        console.log("hitSIDE has triggered!!!!!!!!!!!!!!!!!!!!!!!11")
+        removeBlock(blkIndex);
+        return
+    }
+    
+    if (hitDirect(blocks[blkIndex])) {
+        yDirection = -1 * yDirection; // Direct hit reverses y direction
+        console.log("directHIT has triggered")
+        removeBlock(blkIndex);
+        return
+    }
+
+}
+
+function removeBlock(removeableBlockIndex) {
+    const allBlocks = document.querySelectorAll('.block');
+    grid.removeChild(allBlocks[removeableBlockIndex]);
+    blocks.splice(removeableBlockIndex, 1);
+    score = score + 10;
 }
 
 function checkBounds(b) {
@@ -169,15 +191,25 @@ function checkBounds(b) {
     }
     return true; // Collision detected
 }
-
 function hitSide(b) {
-    if (ball.bottomLeft.y >= b.bottomRight.y && ball.bottomLeft.y <= b.topRight.y) {
+    if (ball.bottomLeft.y >= b.bottomRight.y && 
+        ball.bottomLeft.y <= b.topRight.y &&
+        ball.bottomLeft.x === b.topRight.x) {
         return true;
     }
-    if (ball.bottomRight.y >= b.bottomLeft.y && ball.bottomRight.y <= b.topLeft.y) {
+    if (ball.bottomRight.y >= b.bottomLeft.y && 
+        ball.bottomRight.y <= b.topLeft.y &&
+        ball.bottomRight.x === b.topLeft.y) {
         return true;
     }
     return false;
+}
+
+function hitDirect(b) {
+    if (ball.topRight.x >= b.bottomLeft.x && 
+        ball.topLeft.x <= b.bottomRight.x) {
+        return true;
+    }
 }
 
 function stop() {
@@ -186,7 +218,7 @@ function stop() {
 }
 
 function gameLoop() {
-    console.log("Ball topRight Y coord: " + ball.topRight.y)
+    // console.log("Ball topRight Y coord: " + ball.topRight.y)
     moveBall();
     requestAnimationFrame(gameLoop);
 }
