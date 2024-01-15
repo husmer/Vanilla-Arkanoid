@@ -19,12 +19,11 @@ const nmbOfRows = 3;
 
 // Setting the max score of the game
 const maxScore = 10 * nmbOfColumns * nmbOfRows;
-console.log(maxScore)
 let gameIsOver = false;
 
 const grid = document.querySelector('.grid');
 
-document.addEventListener('keydown', moveBat);
+
 
 const bat = new Block(280, 10, blockWidth, blockHeight);
 displayBlock(bat, 'bat');
@@ -36,8 +35,13 @@ const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
 let score = 0;
 
+// Start/Reset button
+const toggleButton = document.getElementById('toggleButton');
+toggleButton.addEventListener('click', toggleGame);
 
-// Define and build blocks
+let isGameRunning = false;
+
+// Define block prototype
 function Block(left, bottom, width, height) {
     this.bottomLeft = { x: left, y: bottom };
     this.bottomRight = { x: left + width, y: bottom };
@@ -61,8 +65,12 @@ Block.prototype.setY = function(y) {
     this.topRight.y = y + this.height;
 }
 
+Block.prototype.setPosition = function(x, y) {
+    this.setX(x);
+    this.setY(y);
+}
 
-const blocks = [];
+let blocks = [];
 
 // --- End of setting game constants ---
 
@@ -96,7 +104,7 @@ function createRows() {
 }
 // --- End of building game blocks ---
 
-// +++ Start of game loop +++
+// +++ Start of define game loop +++
 function moveBat(event) {
     const key = event.key;
     switch (key) {
@@ -172,14 +180,12 @@ function checkCollision() {
 
     if (hitSide(blocks[blkIndex])) {
         xDirection = -1 * xDirection; // Blocks side wall hit reverses x direction
-        console.log("hitSIDE has triggered!!!!!!!!!!!!!!!!!!!!!!!11")
         removeBlock(blkIndex);
         return
     }
     
     if (hitDirect(blocks[blkIndex])) {
         yDirection = -1 * yDirection; // Direct hit reverses y direction
-        console.log("directHIT has triggered")
         removeBlock(blkIndex);
         return
     }
@@ -228,12 +234,69 @@ function stop() {
     document.removeEventListener('keydown', moveBat);
     gameIsOver = true;
 }
+// +++ Starts the game +++
+
 
 function gameLoop() {
-    // console.log("Ball topRight Y coord: " + ball.topRight.y)
-    moveBall();
-    requestAnimationFrame(gameLoop);
+    if (isGameRunning) {
+        moveBall();
+        requestAnimationFrame(gameLoop);
+    }
+
 }
 
-// +++ Starts the game +++
-requestAnimationFrame(gameLoop);
+// +++ Pause, Start, Reset, Continue menu +++
+function toggleGame() {
+    if(!isGameRunning) {
+        // Start Game
+        console.log("!!!!! I Was triggered")
+        
+        isGameRunning = true;
+        toggleButton.textContent = 'Reset';
+        document.addEventListener('keydown', moveBat);
+        // Set correct ball direction
+        xDirection = -2;
+        yDirection = 2;
+
+        requestAnimationFrame(gameLoop);
+    } else {
+        // Reset Game
+        resetGame();
+    }
+}
+
+function resetGame() {
+    gameover.innerHTML = "";
+    document.removeEventListener('keydown', moveBat);
+
+    isGameRunning = false;
+    gameIsOver = false;
+    toggleButton.textContent = 'Start';
+
+    removeBlockElements("block");
+    removeBlockElements("bat");
+    removeBlockElements("ball");
+    blocks.length = 0;
+
+    createRows();
+    displayBlocks();
+
+    // Reset ball and bat positions
+    bat.setPosition(280, 10);
+    ball.setPosition(280, 50);
+    displayBlock(bat, 'bat');
+    displayBlock(ball, 'ball');
+
+    xDirection = -2;
+    yDirection = 2;
+
+    score = 0;
+    console.log("resetGame blocks: " + blocks.length);
+}
+
+function removeBlockElements(className) {
+    const elements = document.querySelectorAll(`.${className}`);
+    elements.forEach(element => {
+        grid.removeChild(element);
+    });
+}
