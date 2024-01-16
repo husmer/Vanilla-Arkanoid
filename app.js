@@ -37,6 +37,10 @@ const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
 let score = 0;
 
+// Timer
+
+let timer = 0;
+
 // Start/Reset button
 const toggleButton = document.getElementById('toggleButton');
 toggleButton.addEventListener('click', toggleGame);
@@ -126,19 +130,14 @@ function keyUpHandler(e) { // for smooth bat controls
 }
 
 function moveBat() {
-    if (rightPressed) {
-        if (bat.bottomLeft.x <= 560) {
-            bat.setX(bat.bottomLeft.x + 5);
-            const bElement = document.querySelector('.bat');
-            bElement.style.left = bat.bottomLeft.x + 'px';
-        }    
-    } else if (leftPressed){
-            if (bat.bottomLeft.x >= 10) {
-                bat.setX(bat.bottomLeft.x - 5);
-                const bElement = document.querySelector('.bat');
-                bElement.style.left = bat.bottomLeft.x + 'px';
-        }
+    if (rightPressed && bat.bottomLeft.x <= 560) {
+        bat.setX(bat.bottomLeft.x + 5);
+    } else if (leftPressed && bat.bottomLeft.x >= 10) {
+        bat.setX(bat.bottomLeft.x - 5);
     }
+
+    const bElement = document.querySelector('.bat');
+    bElement.style.left = bat.bottomLeft.x + 'px';
 }
 
 function moveBall() {
@@ -246,6 +245,16 @@ function hitDirect(b) {
     }
 }
 
+function updateTimer() {
+    timer += 1;
+    if(timer >= 0) {
+        let seconds = Math.floor(timer/ 60);
+
+        const timerElement = document.getElementById('timer');
+        timerElement.innerHTML = seconds;
+    }
+}
+
 function stop() {
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
@@ -256,6 +265,7 @@ function stop() {
 
 function gameLoop() {
     if (isGameRunning) {
+        updateTimer();
         moveBall();
         moveBat();
         requestAnimationFrame(gameLoop);
