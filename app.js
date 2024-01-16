@@ -14,12 +14,12 @@ const ballSpeed = 5;
 let xDirection = -2;
 let yDirection = 2;
 
-const nmbOfColumns = 6;
-const nmbOfRows = 3;
+const nmbOfColumns = 3;
+const nmbOfRows = 1;
 
 // Setting the max score of the game
 const maxScore = 10 * nmbOfColumns * nmbOfRows;
-let isGameOver = false;
+
 
 const grid = document.querySelector('.grid');
 
@@ -45,7 +45,11 @@ let timer = 0;
 const toggleButton = document.getElementById('toggleButton');
 toggleButton.addEventListener('click', toggleGame);
 
-let isGameRunning = false;
+
+let isGameOver = false; //these two are essential
+let isGameRunning = false; // DO NOT touch here or anywhere else
+
+
 
 // Define block prototype
 function Block(left, bottom, width, height) {
@@ -247,54 +251,68 @@ function hitDirect(b) {
 
 function updateTimer() {
     timer += 1;
-    if(timer >= 0) {
+    console.log("updateTimer> isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
+    if(isGameRunning) {
         let seconds = Math.floor(timer/ 60);
+        // console.log("updateTimer is running")
 
         const timerElement = document.getElementById('timer');
         timerElement.innerHTML = seconds;
+    } else if (!isGameRunning || isGameOver) {
+        return
     }
 }
 
 function stop() {
+    // cancel the animation frame
+    // cancelAnimationFrame(animationFrameId);
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
+    rightPressed = false;
+    leftPressed = false;
+    isGameRunning = false;
     isGameOver = true;
+    console.log("stop func was triggered!!!!!!!" + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
+
 }
+
 // +++ Starts the game +++
-
-
 function gameLoop() {
     if (isGameRunning) {
         updateTimer();
         moveBall();
         moveBat();
         requestAnimationFrame(gameLoop);
+        
     }
 
 }
 
-// +++ Pause, Start, Reset, Continue menu +++
+// +++ Start, Reset, Pause, Continue menu +++
 function toggleGame() {
-    if(!isGameRunning) {
+    if(!isGameOver && !isGameRunning) {
         // Start Game
-        
         isGameRunning = true;
+        isGameOver = false;
+        console.log("toggleGame func was triggered!!!!!!!" + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
         toggleButton.textContent = 'Reset';
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
         // Set correct ball direction
         xDirection = -2;
         yDirection = 2;
-
+        
         requestAnimationFrame(gameLoop);
     } else {
+        console.log("toggleGame else")
         // Reset Game
         resetGame();
     }
 }
 
 function resetGame() {
-    gameover.innerHTML = "";
+    // cancelAnimationFrame(animationFrameId);
+
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
 
@@ -319,9 +337,12 @@ function resetGame() {
 
     xDirection = -2;
     yDirection = 2;
-
+    console.log("Restart was triggered");
     score = 0;
-    console.log("resetGame blocks: " + blocks.length);
+    timer = 0;
+    gameover.innerHTML = "";
+
+
 }
 
 function removeBlockElements(className) {
