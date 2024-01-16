@@ -19,11 +19,13 @@ const nmbOfRows = 3;
 
 // Setting the max score of the game
 const maxScore = 10 * nmbOfColumns * nmbOfRows;
-let gameIsOver = false;
+let isGameOver = false;
 
 const grid = document.querySelector('.grid');
 
-
+//Boolean for event listener
+let rightPressed = false;
+let leftPressed = false;
 
 const bat = new Block(280, 10, blockWidth, blockHeight);
 displayBlock(bat, 'bat');
@@ -105,28 +107,42 @@ function createRows() {
 // --- End of building game blocks ---
 
 // +++ Start of define game loop +++
-function moveBat(event) {
-    const key = event.key;
-    switch (key) {
-        case 'ArrowLeft':
+function keyDownHandler(e) { // for smooth bat controls
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }
+}
+
+function keyUpHandler(e) { // for smooth bat controls
+    if(e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    else if(e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }
+}
+
+function moveBat() {
+    if (rightPressed) {
+        if (bat.bottomLeft.x <= 560) {
+            bat.setX(bat.bottomLeft.x + 5);
+            const bElement = document.querySelector('.bat');
+            bElement.style.left = bat.bottomLeft.x + 'px';
+        }    
+    } else if (leftPressed){
             if (bat.bottomLeft.x >= 10) {
-                bat.setX(bat.bottomLeft.x - 10);
+                bat.setX(bat.bottomLeft.x - 5);
                 const bElement = document.querySelector('.bat');
                 bElement.style.left = bat.bottomLeft.x + 'px';
-            }
-            break;
-        case 'ArrowRight':
-            if (bat.bottomLeft.x <= 560) {
-                bat.setX(bat.bottomLeft.x + 10);
-                const bElement = document.querySelector('.bat');
-                bElement.style.left = bat.bottomLeft.x + 'px';
-            }
-            break;
+        }
     }
 }
 
 function moveBall() {
-    if (gameIsOver) {
+    if (isGameOver) {
         return;
     }
     checkCollision();
@@ -231,8 +247,9 @@ function hitDirect(b) {
 }
 
 function stop() {
-    document.removeEventListener('keydown', moveBat);
-    gameIsOver = true;
+    document.removeEventListener("keydown", keyDownHandler, false);
+    document.removeEventListener("keyup", keyUpHandler, false);
+    isGameOver = true;
 }
 // +++ Starts the game +++
 
@@ -240,6 +257,7 @@ function stop() {
 function gameLoop() {
     if (isGameRunning) {
         moveBall();
+        moveBat();
         requestAnimationFrame(gameLoop);
     }
 
@@ -249,11 +267,11 @@ function gameLoop() {
 function toggleGame() {
     if(!isGameRunning) {
         // Start Game
-        console.log("!!!!! I Was triggered")
         
         isGameRunning = true;
         toggleButton.textContent = 'Reset';
-        document.addEventListener('keydown', moveBat);
+        document.addEventListener("keydown", keyDownHandler, false);
+        document.addEventListener("keyup", keyUpHandler, false);
         // Set correct ball direction
         xDirection = -2;
         yDirection = 2;
@@ -267,10 +285,11 @@ function toggleGame() {
 
 function resetGame() {
     gameover.innerHTML = "";
-    document.removeEventListener('keydown', moveBat);
+    document.removeEventListener("keydown", keyDownHandler, false);
+    document.removeEventListener("keyup", keyUpHandler, false);
 
     isGameRunning = false;
-    gameIsOver = false;
+    isGameOver = false;
     toggleButton.textContent = 'Start';
 
     removeBlockElements("block");
