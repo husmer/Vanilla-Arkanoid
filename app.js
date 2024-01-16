@@ -291,7 +291,8 @@ function resetGame() {
     isGameRunning = false;
     isGameOver = false;
     toggleButton.textContent = 'Start';
-
+    rightPressed = false;
+    leftPressed = false;
     removeBlockElements("block");
     removeBlockElements("bat");
     removeBlockElements("ball");
