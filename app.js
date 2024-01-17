@@ -35,6 +35,7 @@ displayBlock(ball, 'ball');
 
 const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
+const pausedGame = document.getElementById('pauseGame')
 let score = 0;
 
 // Timer
@@ -42,13 +43,16 @@ let score = 0;
 let timer = 0;
 
 // Start/Reset button
-const toggleButton = document.getElementById('toggleButton');
-toggleButton.addEventListener('click', toggleGame);
+const startButton = document.getElementById('startButton');
+startButton.addEventListener('click', startGame);
 
+// Paus/Continue button
+const pauseButton = document.getElementById('pauseButton');
+pauseButton.addEventListener('click', pauseGame);
 
 let isGameOver = false; //these two are essential
 let isGameRunning = false; // DO NOT touch here or anywhere else
-
+let gameStart
 
 
 // Define block prototype
@@ -111,6 +115,13 @@ function createRows() {
     };
 
     return blockCounter;
+}
+
+function removeBlockElements(className) {
+    const elements = document.querySelectorAll(`.${className}`);
+    elements.forEach(element => {
+        grid.removeChild(element);
+    });
 }
 // --- End of building game blocks ---
 
@@ -252,20 +263,19 @@ function hitDirect(b) {
 function updateTimer() {
     timer += 1;
     console.log("updateTimer> isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
-    if(isGameRunning) {
+    if(isGameRunning) { // game is running
         let seconds = Math.floor(timer/ 60);
-        // console.log("updateTimer is running")
 
         const timerElement = document.getElementById('timer');
         timerElement.innerHTML = seconds;
-    } else if (!isGameRunning || isGameOver) {
+    } else if (!isGameRunning && isGameOver) { // Game is over
         return
+    } else if (!isGameRunning && !isGameOver) {
+
     }
 }
 
 function stop() {
-    // cancel the animation frame
-    // cancelAnimationFrame(animationFrameId);
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
     rightPressed = false;
@@ -284,18 +294,20 @@ function gameLoop() {
         moveBat();
         requestAnimationFrame(gameLoop);
         
+    } else {
+        return
     }
 
 }
 
 // +++ Start, Reset, Pause, Continue menu +++
-function toggleGame() {
+function startGame() {
     if(!isGameOver && !isGameRunning) {
         // Start Game
         isGameRunning = true;
         isGameOver = false;
         console.log("toggleGame func was triggered!!!!!!!" + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
-        toggleButton.textContent = 'Reset';
+        startButton.textContent = 'Reset';
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
         // Set correct ball direction
@@ -304,7 +316,8 @@ function toggleGame() {
         
         requestAnimationFrame(gameLoop);
     } else {
-        console.log("toggleGame else")
+        console.log("toggleGame else " + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
+
         // Reset Game
         resetGame();
     }
@@ -318,7 +331,7 @@ function resetGame() {
 
     isGameRunning = false;
     isGameOver = false;
-    toggleButton.textContent = 'Start';
+    startButton.textContent = 'Start';
     rightPressed = false;
     leftPressed = false;
     removeBlockElements("block");
@@ -345,9 +358,21 @@ function resetGame() {
 
 }
 
-function removeBlockElements(className) {
-    const elements = document.querySelectorAll(`.${className}`);
-    elements.forEach(element => {
-        grid.removeChild(element);
-    });
+function pauseGame() {
+    if (isGameRunning) {
+        isGameRunning = false;
+        pauseButton.textContent = 'Continue';
+    } else {
+        continueGame();
+        
+    }
+
 }
+
+function continueGame() {
+    isGameRunning = true;
+    pauseButton.textContent = 'Pause'
+    console.log("I'm triggered in continueGame");
+    gameLoop();
+}
+
