@@ -7,17 +7,20 @@
     </head>
     <body>
         <h2>Arkanoid© by Oliver</h2>
-        <div>
+        <div class="buttons">
             <button id="startButton">Start</button>
             <button id="pauseButton" style="display: none;">Pause</button>            
         </div>
-        <div>
-            Lives: <span id="health"></span>
+        <div class="info">
+            <div class="health">
+                Lives: <span id="health"></span>
+            </div>
+            <div class="score">Score: <span id="score"></span>
+                <span id="gameover"></span>
+            </div>
+            <div class="timer">Timer: <span id="timer">0</span></div>            
         </div>
-        <div>Score: <span id="score"></span>
-            <span id="gameover"></span>
-        </div>
-        <div>Timer: <span id="timer">0</span></div>
+
         <div class="grid">
             
             <script type="text/javascript" src="app.js"></script>

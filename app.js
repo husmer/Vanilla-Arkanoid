@@ -9,7 +9,8 @@ const ballWidth = 10;
 const ballHeight = 10;
 const ballSpeed = 5;
 
-
+// Helper to control the animationframe looping
+let isGameLoopRunning = false;
 
 let xDirection = -2;
 let yDirection = 2;
@@ -56,7 +57,7 @@ pauseButton.addEventListener('click', pauseGame);
 
 let isGameOver = false; //these two are essential
 let isGameRunning = false; // DO NOT touch here or anywhere else
-
+let ballOutOfBounds = false;
 
 // Define block prototype
 function Block(left, bottom, width, height) {
@@ -132,17 +133,17 @@ function removeBlockElements(className) {
 function keyDownHandler(e) { // for smooth bat controls
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = true;
-    }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    } else if(e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = true;
+    } else if(e.key === 'Up' || e.key == "ArrowUp") {
+        handleUpPress();
     }
 }
 
 function keyUpHandler(e) { // for smooth bat controls
     if(e.key == "Right" || e.key == "ArrowRight") {
         rightPressed = false;
-    }
-    else if(e.key == "Left" || e.key == "ArrowLeft") {
+    } else if(e.key == "Left" || e.key == "ArrowLeft") {
         leftPressed = false;
     }
 }
@@ -175,6 +176,17 @@ function moveBall() {
     ballElement.style.bottom = ball.bottomLeft.y + 'px';
 }
 
+function followBat() {
+    const batCenterX = bat.bottomLeft.x + (bat.width - ball.width) / 2;
+    const batTopY = bat.topRight.y + 10;
+
+    ball.setPosition(batCenterX, batTopY);
+
+    const ballElement = document.querySelector('.ball');
+    ballElement.style.left = ball.bottomLeft.x + 'px';
+    ballElement.style.bottom = ball.bottomLeft.y + 'px';
+    checkCollision();
+}
 
 function checkCollision() {
     // Bat hit detection
@@ -187,20 +199,10 @@ function checkCollision() {
         }
     }    
     
-    // Bottom wall hit detection
-    if (ball.bottomRight.y === 0) {
-        if (lives > 0) {
-            lives -= 1;
-            updateHealthDisplay();
-            yDirection = -1 * yDirection;
-            xDirection = -1 * xDirection;
-        } else {
-        gameover.innerHTML = " Game over bozo...";
-        stop();    
-        }
-    }
+
     // Wall hit detection
     if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
+        console.log("Wall hit detection");
         xDirection = -1 * xDirection;
     }
     // Top wall hit detection
@@ -211,8 +213,19 @@ function checkCollision() {
         } else {
             xDirection = -1;
         }
-    } 
+    }
 
+    // Bottom wall hit detection
+    if (ball.bottomRight.y === 0) {
+        if (lives > 0) {
+            lives -= 1;
+            updateHealthDisplay();
+            ballOutOfBounds = true;
+        } else {
+        gameover.innerHTML = " Game over bozo...";
+        stop();    
+        }
+    }
      // Block hit detection
     const blkIndex = blocks.findIndex(checkBounds);
     // Check if no blocks are touched
@@ -231,6 +244,7 @@ function checkCollision() {
         return
     } 
 }
+
 
 function removeBlock(removeableBlockIndex) {
     const allBlocks = document.querySelectorAll('.block');
@@ -296,12 +310,26 @@ function stop() {
 
 // +++ Starts the game +++
 function gameLoop() {
-    if (isGameRunning) {
-        updateTimer();
-        moveBall();
-        moveBat();
-        requestAnimationFrame(gameLoop);
-        
+    if (isGameRunning && !isGameLoopRunning) {
+        isGameLoopRunning = true;
+
+        if (ballOutOfBounds === false) {
+            updateTimer();
+            moveBall();
+            moveBat();
+            requestAnimationFrame(function() {
+                isGameLoopRunning = false;
+                gameLoop();
+            });        
+        } else {
+            updateTimer();
+            moveBat();
+            followBat();
+            requestAnimationFrame(function() {
+                isGameLoopRunning = false;
+                gameLoop();
+            });
+        }
     } else {
         return
     }
@@ -318,6 +346,7 @@ function toggleButtons() {
     }
 }
 function startGame() {
+    console.log("StartGame was triggered");
     if(!isGameOver && !isGameRunning) {
         // Start Game
         isGameRunning = true;
@@ -341,7 +370,6 @@ function startGame() {
 }
 
 function resetGame() {
-    // cancelAnimationFrame(animationFrameId);
 
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
@@ -399,4 +427,16 @@ function updateHealthDisplay() {
     const heartsString = heartEmoji.repeat(lives) + emptyHeartEmoji.repeat(2 - lives);
     healthSpan.innerHTML = heartsString;
     livesCounter += 1;
+}
+
+function handleUpPress() {
+    if (isGameRunning && ballOutOfBounds) {
+        console.log("handleUpPress");
+        ballOutOfBounds = false;
+        xDirection = 2;
+        yDirection = 2;
+        gameLoop();
+    } else {
+        console.log("Error: isGameRunning = false")
+    }
 }
