@@ -34,7 +34,7 @@ let leftPressed = false;
 const bat = new Block(280, 10, blockWidth, blockHeight);
 displayBlock(bat, 'bat');
 
-const ball = new Block(280, 50, ballWidth, ballHeight);
+const ball = new Block(328, 50, ballWidth, ballHeight);
 displayBlock(ball, 'ball');
 
 const healthSpan = document.getElementById('health');
@@ -422,7 +422,7 @@ function continueGame() {
 }
 
 function updateHealthDisplay() {
-    const heartEmoji ='♥️';
+    const heartEmoji ='❤️';
     const emptyHeartEmoji = '♡';
     const heartsString = heartEmoji.repeat(lives) + emptyHeartEmoji.repeat(2 - lives);
     healthSpan.innerHTML = heartsString;

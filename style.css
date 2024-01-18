@@ -1,8 +1,19 @@
+
+body {
+    background-image: url("../img/background.jpg");
+    background-size: cover;
+    background-repeat: repeat;
+    color: white;
+}
+
+
 .grid {
     width: 670px;
     height: 300px;
-    border: 1px solid black;
-    position: absolute;
+    border: 5px ridge black;
+    position: relative; /* Change from absolute to relative */
+    margin: 0 auto; /* Center the grid horizontally */
+    background-color: rgba(82, 135, 168, 0.5);
 }
 
 .block, .bat {
@@ -16,13 +27,13 @@
 }
 
 .block {
-    box-shadow: inset 5px 5px 5px rgb(193, 218, 233),
+    box-shadow: inset 5px 5px 5px rgb(126, 179, 212),
         inset -5px -5px 5px rgb(39, 39, 39);
 }
 
 .bat {
     background-color: #AA0303;
-    box-shadow: inset 5px 5px 5px rgb(193, 218, 233),
+    box-shadow: inset 5px 5px 5px rgb(221, 190, 190),
     inset -5px -5px 5px rgb(39, 39, 39);
 }
 
@@ -32,24 +43,11 @@
     background-color: #03AA03;
     position: absolute;
     border-radius: 5px;
+    box-shadow: inset 2px 2px 1px rgb(19, 211, 12),
+    inset -2px -2px 1px rgb(19, 109, 19);
 }
 
 #gameover {
     position: absolute;
     left: 20%;
 }
-/* .splash {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-    height: 50%;
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 9999;
-}
-
-.countdown {
-    font-size: 48px;
-    color: white;
-} */
