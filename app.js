@@ -21,6 +21,8 @@ const nmbOfRows = 3;
 const maxScore = 10 * nmbOfColumns * nmbOfRows;
 
 let lives = 2; // initial number of lives
+let livesCounter = 0;
+
 
 const grid = document.querySelector('.grid');
 
@@ -34,6 +36,7 @@ displayBlock(bat, 'bat');
 const ball = new Block(280, 50, ballWidth, ballHeight);
 displayBlock(ball, 'ball');
 
+const healthSpan = document.getElementById('health');
 const scoreSpan = document.getElementById('score');
 const gameover = document.getElementById('gameover');
 const pausedGame = document.getElementById('pauseGame')
@@ -188,6 +191,7 @@ function checkCollision() {
     if (ball.bottomRight.y === 0) {
         if (lives > 0) {
             lives -= 1;
+            updateHealthDisplay();
             yDirection = -1 * yDirection;
             xDirection = -1 * xDirection;
         } else {
@@ -304,7 +308,7 @@ function gameLoop() {
 
 }
 
-// +++ Start, Reset, Pause, Continue menu +++
+// +++ Start, Reset, Pause, Continue menu, lives +++
 function toggleButtons() {
     if (isGameRunning) {
         pauseButton.style.display = 'inline-block';
@@ -320,6 +324,7 @@ function startGame() {
         isGameOver = false;
         toggleButtons();
 
+        updateHealthDisplay();
         startButton.textContent = 'Reset';
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
@@ -366,6 +371,7 @@ function resetGame() {
     score = 0;
     timer = 0;
     lives = 2;
+    updateHealthDisplay();
     gameover.innerHTML = "";
 }
 
@@ -387,3 +393,10 @@ function continueGame() {
     gameLoop();
 }
 
+function updateHealthDisplay() {
+    const heartEmoji ='♥️';
+    const emptyHeartEmoji = '♡';
+    const heartsString = heartEmoji.repeat(lives) + emptyHeartEmoji.repeat(2 - lives);
+    healthSpan.innerHTML = heartsString;
+    livesCounter += 1;
+}
