@@ -14,12 +14,13 @@ const ballSpeed = 5;
 let xDirection = -2;
 let yDirection = 2;
 
-const nmbOfColumns = 3;
-const nmbOfRows = 1;
+const nmbOfColumns = 6;
+const nmbOfRows = 3;
 
 // Setting the max score of the game
 const maxScore = 10 * nmbOfColumns * nmbOfRows;
 
+let lives = 2; // initial number of lives
 
 const grid = document.querySelector('.grid');
 
@@ -52,7 +53,6 @@ pauseButton.addEventListener('click', pauseGame);
 
 let isGameOver = false; //these two are essential
 let isGameRunning = false; // DO NOT touch here or anywhere else
-let gameStart
 
 
 // Define block prototype
@@ -182,6 +182,18 @@ function checkCollision() {
         } else {
             xDirection = 2;
         }
+    }    
+    
+    // Bottom wall hit detection
+    if (ball.bottomRight.y === 0) {
+        if (lives > 0) {
+            lives -= 1;
+            yDirection = -1 * yDirection;
+            xDirection = -1 * xDirection;
+        } else {
+        gameover.innerHTML = " Game over bozo...";
+        stop();    
+        }
     }
     // Wall hit detection
     if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
@@ -196,30 +208,24 @@ function checkCollision() {
             xDirection = -1;
         }
     } 
-    // Bottom wall hit detection
-    if (ball.bottomRight.y === 0) {    
-        gameover.innerHTML = " Game over bozo...";
-        stop();
-    }
+
      // Block hit detection
     const blkIndex = blocks.findIndex(checkBounds);
     // Check if no blocks are touched
     if (blkIndex < 0) {
         return
     }
-
+   
     if (hitSide(blocks[blkIndex])) {
         xDirection = -1 * xDirection; // Blocks side wall hit reverses x direction
         removeBlock(blkIndex);
         return
     }
-    
     if (hitDirect(blocks[blkIndex])) {
         yDirection = -1 * yDirection; // Direct hit reverses y direction
         removeBlock(blkIndex);
         return
-    }
-
+    } 
 }
 
 function removeBlock(removeableBlockIndex) {
@@ -239,30 +245,29 @@ function checkBounds(b) {
     }
     return true; // Collision detected
 }
+
+
 function hitSide(b) {
-    if (ball.bottomLeft.y >= b.bottomRight.y && 
-        ball.bottomLeft.y <= b.topRight.y &&
-        ball.bottomLeft.x === b.topRight.x) {
-        return true;
-    }
-    if (ball.bottomRight.y >= b.bottomLeft.y && 
-        ball.bottomRight.y <= b.topLeft.y &&
-        ball.bottomRight.x === b.topLeft.y) {
-        return true;
-    }
-    return false;
+    if (ball.topLeft.y > b.bottomRight.y && 
+        ball.bottomLeft.y < b.topRight.y )
+        return true
+    if (ball.topRight.y > b.bottomLeft.y && 
+        ball.bottomRight.y < b.topLeft.y )
+        return true
+    return false
 }
 
 function hitDirect(b) {
-    if (ball.topRight.x >= b.bottomLeft.x && 
-        ball.topLeft.x <= b.bottomRight.x) {
+    if (ball.topRight.y === b.bottomRight.y) {
+        return true;
+    }
+    if (ball.bottomLeft.y === b.topLeft.y) {
         return true;
     }
 }
 
 function updateTimer() {
     timer += 1;
-    console.log("updateTimer> isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
     if(isGameRunning) { // game is running
         let seconds = Math.floor(timer/ 60);
 
@@ -282,8 +287,7 @@ function stop() {
     leftPressed = false;
     isGameRunning = false;
     isGameOver = true;
-    console.log("stop func was triggered!!!!!!!" + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
-
+    toggleButtons();
 }
 
 // +++ Starts the game +++
@@ -301,12 +305,21 @@ function gameLoop() {
 }
 
 // +++ Start, Reset, Pause, Continue menu +++
+function toggleButtons() {
+    if (isGameRunning) {
+        pauseButton.style.display = 'inline-block';
+    } else {
+        pauseButton.style.display = 'none';
+        
+    }
+}
 function startGame() {
     if(!isGameOver && !isGameRunning) {
         // Start Game
         isGameRunning = true;
         isGameOver = false;
-        console.log("toggleGame func was triggered!!!!!!!" + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
+        toggleButtons();
+
         startButton.textContent = 'Reset';
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
@@ -316,10 +329,9 @@ function startGame() {
         
         requestAnimationFrame(gameLoop);
     } else {
-        console.log("toggleGame else " + "isGameOver: "+ isGameOver + "\nisGameRunning: "+ isGameRunning)
-
         // Reset Game
         resetGame();
+        toggleButtons();
     }
 }
 
@@ -353,9 +365,8 @@ function resetGame() {
     console.log("Restart was triggered");
     score = 0;
     timer = 0;
+    lives = 2;
     gameover.innerHTML = "";
-
-
 }
 
 function pauseGame() {
