@@ -12,10 +12,18 @@
     position: absolute;
     left: 10px;
     bottom: 10px;
+    border-radius: 4px;
+}
+
+.block {
+    box-shadow: inset 5px 5px 5px rgb(193, 218, 233),
+        inset -5px -5px 5px rgb(39, 39, 39);
 }
 
 .bat {
     background-color: #AA0303;
+    box-shadow: inset 5px 5px 5px rgb(193, 218, 233),
+    inset -5px -5px 5px rgb(39, 39, 39);
 }
 
 .ball {
