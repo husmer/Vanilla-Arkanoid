@@ -51,3 +51,8 @@ body {
     position: absolute;
     left: 20%;
 }
+
+.buttons {
+    position: relative; /* Change from absolute to relative */
+    margin: 0 auto; /* Center the grid horizontally */
+}
