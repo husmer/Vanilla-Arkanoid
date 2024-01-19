@@ -161,6 +161,7 @@ function moveBat() {
 }
 
 function moveBall() {
+    // console.log("moveBall is activated");
     if (isGameOver) {
         return;
     }
@@ -198,6 +199,7 @@ function checkCollision() {
         } else {
             xDirection = 2;
         }
+        return
     }    
     
     // console.log("checkCollision");
@@ -210,6 +212,7 @@ function checkCollision() {
         } else {
             xDirection = -1;
         }
+        return
     }
 
     // Bottom wall hit detection
@@ -222,11 +225,13 @@ function checkCollision() {
         gameover.innerHTML = " Game over bozo...";
         stop();    
         }
+        return
     }
     // Wall hit detection
     if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
         console.log("Wall hit detection");
         xDirection = -1 * xDirection;
+        return
     }
      // Block hit detection
     const blkIndex = blocks.findIndex(checkBounds);
@@ -312,6 +317,7 @@ function stop() {
 
 // +++ Starts the game +++
 function gameLoop() {
+    console.log("ball.topRight.x: " + ball.topRight.x);
     if (isGameRunning && !isGameLoopRunning) {
         isGameLoopRunning = true;
 
