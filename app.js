@@ -58,6 +58,7 @@ pauseButton.addEventListener('click', pauseGame);
 let isGameOver = false; //these two are essential
 let isGameRunning = false; // DO NOT touch here or anywhere else
 let ballOutOfBounds = false;
+let isGamePaused = false;
 
 // Define block prototype
 function Block(left, bottom, width, height) {
@@ -199,12 +200,8 @@ function checkCollision() {
         }
     }    
     
+    // console.log("checkCollision");
 
-    // Wall hit detection
-    if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
-        console.log("Wall hit detection");
-        xDirection = -1 * xDirection;
-    }
     // Top wall hit detection
     if (ball.topRight.y === boardHeight) {    
         yDirection = -1 * yDirection;
@@ -225,6 +222,11 @@ function checkCollision() {
         gameover.innerHTML = " Game over bozo...";
         stop();    
         }
+    }
+    // Wall hit detection
+    if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
+        console.log("Wall hit detection");
+        xDirection = -1 * xDirection;
     }
      // Block hit detection
     const blkIndex = blocks.findIndex(checkBounds);
@@ -340,14 +342,15 @@ function gameLoop() {
 function toggleButtons() {
     if (isGameRunning) {
         pauseButton.style.display = 'inline-block';
+        pauseButton.textContent = 'Pause'
     } else {
         pauseButton.style.display = 'none';
         
     }
 }
 function startGame() {
-    console.log("StartGame was triggered");
-    if(!isGameOver && !isGameRunning) {
+    if(!isGameOver && !isGameRunning && !isGamePaused) {
+        console.log("StartGame was triggered");
         // Start Game
         isGameRunning = true;
         isGameOver = false;
@@ -363,6 +366,7 @@ function startGame() {
         
         requestAnimationFrame(gameLoop);
     } else {
+        console.log("StartGame else was triggered")
         // Reset Game
         resetGame();
         toggleButtons();
@@ -370,12 +374,14 @@ function startGame() {
 }
 
 function resetGame() {
-
+    console.log("resetGame() func triggered");
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
 
     isGameRunning = false;
     isGameOver = false;
+    isGamePaused = false;
+    ballOutOfBounds = false;
     startButton.textContent = 'Start';
     rightPressed = false;
     leftPressed = false;
@@ -389,7 +395,7 @@ function resetGame() {
 
     // Reset ball and bat positions
     bat.setPosition(280, 10);
-    ball.setPosition(280, 50);
+    ball.setPosition(328, 50);
     displayBlock(bat, 'bat');
     displayBlock(ball, 'ball');
 
@@ -406,6 +412,7 @@ function resetGame() {
 function pauseGame() {
     if (isGameRunning) {
         isGameRunning = false;
+        isGamePaused = true;
         pauseButton.textContent = 'Continue';
     } else {
         continueGame();
