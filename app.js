@@ -161,7 +161,6 @@ function moveBat() {
 }
 
 function moveBall() {
-    // console.log("moveBall is activated");
     if (isGameOver) {
         return;
     }
@@ -202,7 +201,6 @@ function checkCollision() {
         return
     }    
     
-    // console.log("checkCollision");
 
     // Top wall hit detection
     if (ball.topRight.y === boardHeight) {    
@@ -229,7 +227,6 @@ function checkCollision() {
     }
     // Wall hit detection
     if (ball.topRight.x >= boardWidth || ball.topLeft.x <= 0) {    // Left or Right wall
-        console.log("Wall hit detection");
         xDirection = -1 * xDirection;
         return
     }
@@ -317,7 +314,6 @@ function stop() {
 
 // +++ Starts the game +++
 function gameLoop() {
-    console.log("ball.topRight.x: " + ball.topRight.x);
     if (isGameRunning && !isGameLoopRunning) {
         isGameLoopRunning = true;
 
@@ -356,7 +352,6 @@ function toggleButtons() {
 }
 function startGame() {
     if(!isGameOver && !isGameRunning && !isGamePaused) {
-        console.log("StartGame was triggered");
         // Start Game
         isGameRunning = true;
         isGameOver = false;
@@ -372,7 +367,6 @@ function startGame() {
         
         requestAnimationFrame(gameLoop);
     } else {
-        console.log("StartGame else was triggered")
         // Reset Game
         resetGame();
         toggleButtons();
@@ -380,7 +374,6 @@ function startGame() {
 }
 
 function resetGame() {
-    console.log("resetGame() func triggered");
     document.removeEventListener("keydown", keyDownHandler, false);
     document.removeEventListener("keyup", keyUpHandler, false);
 
@@ -407,7 +400,6 @@ function resetGame() {
 
     xDirection = -2;
     yDirection = 2;
-    console.log("Restart was triggered");
     score = 0;
     timer = 0;
     lives = 2;
@@ -430,7 +422,6 @@ function pauseGame() {
 function continueGame() {
     isGameRunning = true;
     pauseButton.textContent = 'Pause'
-    console.log("I'm triggered in continueGame");
     gameLoop();
 }
 
@@ -444,7 +435,6 @@ function updateHealthDisplay() {
 
 function handleUpPress() {
     if (isGameRunning && ballOutOfBounds) {
-        console.log("handleUpPress");
         ballOutOfBounds = false;
         xDirection = 2;
         yDirection = 2;
