@@ -13,7 +13,7 @@ const ballSpeed = 5;
 let isGameLoopRunning = false;
 // 60fps limit
 let lastTimestamp = 0;
-const targetFps = 60;
+const targetFps = 90;
 const frameInterval = 1000 / targetFps;
 
 let xDirection = -2;
@@ -353,10 +353,10 @@ function gameLoop(timestamp) {
 
 
 // Start the initial game loop
-requestAnimationFrame(function (timestamp) {
-    lastTimestamp = timestamp;
-    gameLoop(timestamp);
-});
+// requestAnimationFrame(function (timestamp) {
+//     lastTimestamp = timestamp;
+//     gameLoop(timestamp);
+// });
 
 
 // +++ Start, Reset, Pause, Continue menu, lives +++
@@ -384,7 +384,8 @@ function startGame() {
         xDirection = -2;
         yDirection = 2;
         
-        requestAnimationFrame(gameLoop);
+        // requestAnimationFrame(gameLoop);
+        gameLoop();
     } else {
         // Reset Game
         resetGame();
@@ -441,7 +442,7 @@ function pauseGame() {
 function continueGame() {
     isGameRunning = true;
     pauseButton.textContent = 'Pause'
-    gameLoop();
+    requestAnimationFrame(gameLoop);
 }
 
 function updateHealthDisplay() {
@@ -457,7 +458,7 @@ function handleUpPress() {
         ballOutOfBounds = false;
         xDirection = 2;
         yDirection = 2;
-        gameLoop();
+        requestAnimationFrame(gameLoop);
     } else {
         console.log("Error: isGameRunning = false")
     }
