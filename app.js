@@ -228,7 +228,7 @@ function checkCollision() {
         return
     }
     // Wall hit detection
-    if (ball.topRight.x === boardWidth || ball.topLeft.x === 0) {    // Left or Right wall
+    if (ball.topRight.x >= boardWidth || ball.topLeft.x <= 0) {    // Left or Right wall
         console.log("Wall hit detection");
         xDirection = -1 * xDirection;
         return
