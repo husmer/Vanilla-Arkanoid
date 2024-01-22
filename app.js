@@ -13,7 +13,7 @@ const ballSpeed = 5;
 let isGameLoopRunning = false;
 // 60fps limit
 let lastTimestamp = 0;
-const targetFps = 90;
+const targetFps = 70;
 const frameInterval = 1000 / targetFps;
 
 let xDirection = -2;
