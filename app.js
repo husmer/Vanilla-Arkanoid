@@ -11,7 +11,10 @@ const ballSpeed = 5;
 
 // Helper to control the animationframe looping
 let isGameLoopRunning = false;
-
+// 60fps limit
+let lastTimestamp = 0;
+const targetFps = 60;
+const frameInterval = 1000 / targetFps;
 
 let xDirection = -2;
 let yDirection = 2;
@@ -315,32 +318,46 @@ function stop() {
 
 
 // +++ Starts the game +++
-function gameLoop() {
+function gameLoop(timestamp) {
     if (isGameRunning && !isGameLoopRunning) {
         isGameLoopRunning = true;
 
-        if (ballOutOfBounds === false) {
-            updateTimer();
-            moveBall();
-            moveBat();
-            requestAnimationFrame(function() {
-                isGameLoopRunning = false;
-                gameLoop();
-            });        
-        } else {
-            updateTimer();
-            moveBat();
-            followBat();
-            requestAnimationFrame(function() {
-                isGameLoopRunning = false;
-                gameLoop();
-            });
-        }
-    } else {
-        return
-    }
 
+        // Calculate elapsed time since the last frame
+        const elapsed = timestamp - lastTimestamp;
+
+        // Check if enough time has passed to render the next frame
+        if (elapsed > frameInterval) {
+            lastTimestamp = timestamp;
+
+            if (ballOutOfBounds === false) {
+                updateTimer();
+                moveBall();
+                moveBat();       
+            } else {
+                updateTimer();
+                moveBat();
+                followBat();
+            }
+        }
+
+        // Continue the game loop
+        requestAnimationFrame(function (timestamp) {
+            isGameLoopRunning = false;
+            gameLoop(timestamp);
+        });
+    } else {
+        return;
+    }
 }
+
+
+// Start the initial game loop
+requestAnimationFrame(function (timestamp) {
+    lastTimestamp = timestamp;
+    gameLoop(timestamp);
+});
+
 
 // +++ Start, Reset, Pause, Continue menu, lives +++
 function toggleButtons() {
