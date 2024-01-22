@@ -12,6 +12,10 @@ const ballSpeed = 5;
 // Helper to control the animationframe looping
 let isGameLoopRunning = false;
 
+// Limit game to 60 fps.
+let running;
+const minFrameTime = 1000 / 60; // Minimum time per frame for 60 fps
+
 let xDirection = -2;
 let yDirection = 2;
 
@@ -312,8 +316,20 @@ function stop() {
     toggleButtons();
 }
 
+// Limit game to 60 fps.
+const refresh = (timestamp) => {
+    const deltaTime = timestamp - lastTimestamp;
+        if (deltaTime < minFrameTime) {
+          running = requestAnimationFrame(refresh);
+          return;
+        }
+    lastTimestamp = timestamp;
+    running = requestAnimationFrame(refresh);
+}
+let lastTimestamp = performance.now();
+
 // +++ Starts the game +++
-function gameLoop() {
+function gameLoop(timestamp) {
     if (isGameRunning && !isGameLoopRunning) {
         isGameLoopRunning = true;
 
@@ -321,17 +337,19 @@ function gameLoop() {
             updateTimer();
             moveBall();
             moveBat();
-            requestAnimationFrame(function() {
+            refresh(timestamp); // Call the refresh function
+            requestAnimationFrame(function(timestamp) {
                 isGameLoopRunning = false;
-                gameLoop();
+                gameLoop(timestamp);
             });        
         } else {
             updateTimer();
             moveBat();
             followBat();
-            requestAnimationFrame(function() {
+            refresh(timestamp); // Call the refresh function
+            requestAnimationFrame(function(timestamp) {
                 isGameLoopRunning = false;
-                gameLoop();
+                gameLoop(timestamp);
             });
         }
     } else {
