@@ -10,7 +10,7 @@
 
 - Open the game with `open index.html` command.
 
-- Folks with linux might need to ```chmod +r /img```
+- Folks with linux might need to ```chmod +r /img``` the img folder if the background image is not visible.
 
 - Start the game by pressing "Start" button
 - Move the bat with arrow keys.
