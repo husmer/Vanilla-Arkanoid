@@ -10,6 +10,8 @@
 
 - Open the game with `open index.html` command.
 
+- Folks with linux might need to ```chmod +r /img```
+
 - Start the game by pressing "Start" button
 - Move the bat with arrow keys.
 - If you lost a life, use up arrow key to start again.
