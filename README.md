@@ -15,6 +15,3 @@
 - Start the game by pressing "Start" button
 - Move the bat with arrow keys.
 - If you lost a life, use up arrow key to start again.
-
-
-### [Audit Instructions](https://github.com/01-edu/public/tree/master/subjects/make-your-game/audit)
